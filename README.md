@@ -21,7 +21,6 @@ echo id match? true, seq match? true
 - https://github.com/ruxo/ping-rs
 - https://github.com/bparli/fastping-rs/
 - [macOS ping](https://github.com/apple-oss-distributions/network_cmds/blob/network_cmds-698.60.4/ping.tproj/ping.c)
-- https://github.com/rust-lang/socket2/pull/532
-
-  Note: it seems that WASIp2 does not support ICMP :(
-  https://github.com/WebAssembly/wasi-sockets/blob/2e96a2ff547ac2955ff7e16e9964462d9d483c84/wit/udp-create-socket.wit
+- Note: it seems that WASIp2 does not support ICMP :(
+  - https://github.com/rust-lang/socket2/pull/532
+  - https://github.com/WebAssembly/wasi-sockets/blob/2e96a2ff547ac2955ff7e16e9964462d9d483c84/wit/udp-create-socket.wit
