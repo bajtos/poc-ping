@@ -58,28 +58,35 @@ fn main() -> anyhow::Result<()> {
     }
 
     println!(
-        "ICMP Ping Reply packet from {:?} ({size} (0x{size:02x}) bytes):",
+        "ICMP Ping Reply from {:?} ({size} (0x{size:02x}) bytes):",
         addr.as_socket()
     );
     hexdump(&buffer[..size]);
 
-    // decode the header
-    let header =
-        Ipv4HeaderSlice::from_slice(&buffer).context("Failed to parse response IPv4 header")?;
-    println!(
-        "IPv4 response header: payload_len={:?}",
-        header.payload_len()
-    );
+    let response_slice = if buffer[0] == 0x45 {
+        // For some reasons, recv on macOS returns the data including the IPv4 header
+        // but also with wronge payload length
 
-    // For some reasons, the packet bytes returned by `recv_from` on macOS
-    // have the payload length incorrectly set to 8172 bytes
-    // As a result, we cannot use Ipv4Slice::from_slice(&buffer) to parse the packet
-    // let packet = Ipv4Slice::from_slice(&buffer).context("Failed to parse response packet")?;
-    // println!("ICMP response packet: {:?}", packet.payload());
+        // decode the header
+        let header =
+            Ipv4HeaderSlice::from_slice(&buffer).context("Failed to parse response IPv4 header")?;
+        println!(
+            "IPv4 response header: payload_len={:?}",
+            header.payload_len()
+        );
 
-    let header_length = header.slice().len();
-    let response_slice = Icmpv4Slice::from_slice(&buffer[header_length..])
-        .context("Failed to parse ICMPv4 Response header")?;
+        // For some reasons, the packet bytes returned by `recv_from` on macOS
+        // have the payload length incorrectly set to 8172 bytes
+        // As a result, we cannot use Ipv4Slice::from_slice(&buffer) to parse the packet
+        // let packet = Ipv4Slice::from_slice(&buffer).context("Failed to parse response packet")?;
+        // println!("ICMP response packet: {:?}", packet.payload());
+        let header_length = header.slice().len();
+        Icmpv4Slice::from_slice(&buffer[header_length..])
+            .context("Failed to parse ICMPv4 Response header")?
+    } else {
+        Icmpv4Slice::from_slice(&buffer[..size])
+            .context("Failed to parse ICMPv4 Response header")?
+    };
 
     println!(
         "ICMP Ping Response: type={} code={} type={:?}",
