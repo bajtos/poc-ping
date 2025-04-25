@@ -24,3 +24,4 @@ echo id match? true, seq match? true
 - https://github.com/rust-lang/socket2/pull/532
 
   Note: it seems that WASIp2 does not support ICMP :(
+  https://github.com/WebAssembly/wasi-sockets/blob/2e96a2ff547ac2955ff7e16e9964462d9d483c84/wit/udp-create-socket.wit
